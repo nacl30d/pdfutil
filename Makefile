@@ -2,10 +2,10 @@ NAME=pdf utility
 VERSION=1.0
 
 SCRIPT_FILES = $(wildcard *.sh)
-DEST = ${HOME}/bin/
+DEST = ${HOME}/.local/bin/
 
 deploy:
-	@ls ${HOME}/bin &> /dev/null || (mkdir ${DEST} && echo 'directory ${DEST} created.')
+	@ls ${DEST} &> /dev/null || (mkdir ${DEST} && echo 'directory ${DEST} created.')
 	@$(foreach file, $(SCRIPT_FILES), ln -svfn $(abspath $(file)) $(DEST)$(basename ${file} .sh);)
 
 update:
