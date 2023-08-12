@@ -45,7 +45,7 @@ do
         name=$(basename "$pdf")
         number=${name%.*}
         echo '=> Combine left and right page'
-        pdfunite $(ls "cropped/${number}.*" | sort -n) "united/${number}.pdf"
+        pdfunite "cropped/${number}.left.pdf" "cropped/${number}.right.pdf" "united/${number}.pdf"
     else
         continue
     fi
