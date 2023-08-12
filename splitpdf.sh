@@ -6,8 +6,8 @@ function croppdf () {
 
     # set page size
     read org_width org_height <<< $(pdfinfo "$file" | grep 'Page size:' | awk '{print int($3+0.5), int($5+0.5)}')
-    target_width=$(($org_width / 2))
-    target_height=$org_height
+    # Deal with longer side as widths
+    read target_width target_height <<< $(test $org_width -gt $org_height && echo "$(($org_width / 2)) $org_height" || echo "$(($org_height / 2)) $org_width")
 
     # crop left page
     pdftocairo "$file" -pdf -x 0 -y 0 -W $target_width -H $target_height -paperw $target_height -paperh $target_width "./cropped/${file_name}.left.pdf"
