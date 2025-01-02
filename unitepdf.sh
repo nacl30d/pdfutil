@@ -2,6 +2,10 @@
 
 set -Cue
 
+function e_info() {
+    echo "INFO: $1"
+}
+
 function e_warn() {
     echo "WARN: $1"
 }
@@ -13,12 +17,20 @@ EOS
 }
 
 function main() {
-    : "Usage" && {
+    : "Check options" && {
         if [ "$1" = '-h' ] || [ "$1" = '--help' ]; then
             show_usage;
             exit;
         fi
+
+        if [ "$1" = '-y' ]; then
+            readonly yes=true;
+            shift 1;
+        else
+            readonly yes=false;
+        fi
     }
+
 
     : "Check arguments" && {
         if [ "$#" -lt 2 ]; then
@@ -39,19 +51,30 @@ function main() {
         : "Check working files" && {
             if [ -d $wd ]; then
                 e_warn "$wd is already exists.";
-                read -p "Overwrite it? [y/N] " yn
-                if [[ $yn =~ [yY] ]]; then
+                if "$yes"; then
+                    e_info "Remove $wd"
                     rm -rf "$wd"
                 else
-                    exit 1;
+                    read -p "Overwrite it? [Y/n] " yn
+                    if [[ $yn =~ [nN] ]]; then
+                        exit 1;
+                    else
+                        rm -rf "$wd"
+                    fi
                 fi
-            elif [ -f $output ]; then
+            fi
+            if [ -f $output ]; then
                 e_warn "$output is already exists.";
-                read -p "Overwrite it? [y/N] " yn
-                if [[ $yn =~ [yY] ]]; then
-                    rm -rf "$wd"
+                if "$yes"; then
+                    e_info "Overwrite $output"
+                    rm -rf "$output"
                 else
-                    exit 1;
+                    read -p "Overwrite it? [Y/n] " yn
+                    if [[ $yn =~ [nN] ]]; then
+                        exit 1;
+                    else
+                        rm -rf "$output"
+                    fi
                 fi
             fi
         }
