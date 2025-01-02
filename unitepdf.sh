@@ -109,6 +109,11 @@ function main() {
         local -r pwd=$(pwd)
         cd "$wd"
         pdfunite $(ls . | \grep pdf | sort -n) "$pwd/output.pdf"
+        cd -
+    }
+
+    : "Clean up" && {
+        rm -rf "$wd"
     }
 }
 
