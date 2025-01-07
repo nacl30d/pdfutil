@@ -22,13 +22,6 @@ function main() {
             show_usage;
             exit;
         fi
-
-        if [ "$1" = '-y' ]; then
-            readonly yes=true;
-            shift 1;
-        else
-            readonly yes=false;
-        fi
     }
 
 
@@ -45,37 +38,15 @@ function main() {
 
     : "Configurations" && {
         readonly wd="./work"
-        readonly output="output.pdf"
+        readonly output_basename="output"
+        readonly output_ext="pdf"
 
         : "Check working files" && {
-            if [ -d $wd ]; then
-                e_warn "$wd is already exists.";
-                if "$yes"; then
-                    e_info "Remove $wd"
-                    rm -rf "$wd"
-                else
-                    read -p "Overwrite it? [Y/n] " yn
-                    if [[ $yn =~ [nN] ]]; then
-                        exit 1;
-                    else
-                        rm -rf "$wd"
-                    fi
-                fi
-            fi
-            if [ -f $output ]; then
-                e_warn "$output is already exists.";
-                if "$yes"; then
-                    e_info "Overwrite $output"
-                    rm -rf "$output"
-                else
-                    read -p "Overwrite it? [Y/n] " yn
-                    if [[ $yn =~ [nN] ]]; then
-                        exit 1;
-                    else
-                        rm -rf "$output"
-                    fi
-                fi
-            fi
+            readonly output=$(
+                [ -f "$output_basename.$output_ext" ] \
+                    && echo "$output_basename-$(find . -regex "./$output_basename\(-[0-9]+\)?\.$output_ext" | wc -l).$output_ext" \
+                        || echo "$output_basename.$output_ext"
+                     )
         }
     }
 
